@@ -1,4 +1,4 @@
-function CandidateCard({ candidate }) {
+export default function CandidateCard({ candidate }) {
   const updateStatus = (newStatus) => {
     axios.put(`http://localhost:5000/candidates/${candidate._id}/status`, { status: newStatus })
       .then(() => alert('Status updated'))
