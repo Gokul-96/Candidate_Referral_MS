@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import CandidateCard from './components/CandidateCard';
+import CandidateCard from './CandidateCard';
 
 function Dashboard() {
   const [candidates, setCandidates] = useState([]);
