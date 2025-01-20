@@ -1,18 +1,16 @@
-import React from 'react'
-import { BrowserRouter, Router, Routes , Route} from 'react-router-dom';
+import React, { useState } from 'react';
 import Dashboard from './components/Dashboard';
-import ReferralForm from './components/ReferralForm'
-import AuthPage from './components/AuthPage';
-const App = () => {
+import ReferralForm from './components/ReferralForm';
+
+function App() {
+  const [candidates, setCandidates] = useState([]);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/dashboard" element = {<Dashboard/>}/>
-        <Route path="/refer" element={<ReferralForm />} />
-        <Route path="/" element={<AuthPage />} />
-      </Routes>
-    </Router>
-  )
+    <div>
+      <ReferralForm setCandidates={setCandidates} />
+      <Dashboard candidates={candidates} setCandidates={setCandidates} />
+    </div>
+  );
 }
 
-export default App
+export default App;

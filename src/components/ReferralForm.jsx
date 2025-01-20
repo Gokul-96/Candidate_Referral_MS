@@ -1,89 +1,89 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { addCandidate } from '../api/api';
 
-const CandidateForm = () => {
+const ReferralForm = ({ setCandidates }) => {
   const [formData, setFormData] = useState({
-    name: '',
+    candidateName: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     jobTitle: '',
     resume: null,
   });
 
-  const [message, setMessage] = useState('');
-
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, resume: e.target.files[0] });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = new FormData();
-    Object.keys(formData).forEach((key) => data.append(key, formData[key]));
+    data.append('candidateName', formData.candidateName);
+    data.append('email', formData.email);
+    data.append('phoneNumber', formData.phoneNumber);
+    data.append('jobTitle', formData.jobTitle);
+    if (formData.resume) {
+      data.append('resume', formData.resume);
+    }
 
     try {
-      await axios.post('http://localhost:5000/candidates', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setMessage('Candidate referred successfully!');
-      setFormData({ name: '', email: '', phone: '', jobTitle: '', resume: null });
-    } catch (err) {
-      setMessage('Failed to refer candidate. Please try again.');
+      const response = await addCandidate(data);
+      setCandidates((prev) => [...prev, response.data]);
+      alert('Candidate referred successfully!');
+    } catch (error) {
+      console.error('Error referring candidate:', error);
     }
   };
 
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
       <h2>Refer a Candidate</h2>
-      {message && <p>{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Phone Number"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="jobTitle"
-          placeholder="Job Title"
-          value={formData.jobTitle}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="file"
-          name="resume"
-          accept=".pdf"
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+      <input
+        type="text"
+        name="candidateName"
+        placeholder="Candidate Name"
+        value={formData.candidateName}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="tel"
+        name="phoneNumber"
+        placeholder="Phone Number"
+        value={formData.phoneNumber}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="text"
+        name="jobTitle"
+        placeholder="Job Title"
+        value={formData.jobTitle}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="file"
+        name="resume"
+        accept=".pdf"
+        onChange={handleFileChange}
+      />
+      <button type="submit">Submit</button>
+    </form>
   );
 };
 
-export default CandidateForm;
+export default ReferralForm;
